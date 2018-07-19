@@ -28,8 +28,9 @@ The goals / steps of this project are the following:
 [warped_straight_lines]: /examples/warped_straight_lines.png "Warped"
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
 [image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
+[poly1]: ./examples/poly1.png "Fit Visual"
+[poly2]: ./examples/poly2.png "Fit Visual"
+[final_img]: ./examples/final_img.png "Output"
 [video1]: ./project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
@@ -43,6 +44,8 @@ The goals / steps of this project are the following:
 #### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
 
 You're reading it!
+
+The project is implemented in the Jupyter Notebook file `AdvanceLaneFindingProject.ipynb`. The Code cells are referenced in this writeup are identified with a comment in the first line of each cell.
 
 ### Camera Calibration
 
@@ -115,19 +118,27 @@ In "#Code Cell 9" I then created `get_transform_matrix()` function that leverage
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+In "#Code Cell 12" I implement the main logic for identifying the lane-line pixels. I encapsulated in the class `SlidingWindow()`, defined from line 67 onwards, the logic for the sliding window from Lesson 18.
+The main method is `polyfit()` with either calls `sliding_window_polyfit()` or `no_sliding_polyfit()` depending on wheter a line has already been detected. State is stored in the `Lane()` class, including a history of previous polynomials lines, so that we can leverage the average when drawing the lanes.
 
-![alt text][image5]
+In "#Code Cell 13", we do a test of the `SlidingWindow()` class the visualize the output of the lane finding algorithm. The first two images are from calling `sliding_window_polyfit()` and the second two are from calling `no_sliding_polyfit()` which does a more optimized search around the previously found lines.
+
+![alt text][poly1]
+![alt text][poly2]
+
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+In "#Code Cell 12" the method `calc_curve()` at lines 80-96 calculates the curve of the left and right lines. The method `calc_lane_position()` at lines 75-79, calculates the position of the car within the lane.
+
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+In "#Code Cell 12" the method `drawLane()` at lines 330-357 draws the lane and superimposes it upon the original image. The method `drawData()` ouputs the curve and position data on the final image.
 
-![alt text][image6]
+The below image shows an example the final image thru the whole pipeline process.
+
+![alt text][final_img]
 
 ---
 
@@ -135,7 +146,7 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./test_videos_output/project_video.mp4)
 
 ---
 
@@ -144,3 +155,5 @@ Here's a [link to my video result](./project_video.mp4)
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+
+The main area of problems I faced were in lanes where the lighting conditions or the color of the road becomes lighter so that the lane on the left didn't have good contrast to detect. I experimented with using different channels of videos. I ended up with a workable solution for the file project_video.mp4, but still not a great solution for the file challenge_video.mp4. I need to experiment with additional colorspaces, channels, gradients and thresholds to come up with a more fault tolerant solution. 
